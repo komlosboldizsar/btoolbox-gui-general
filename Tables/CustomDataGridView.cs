@@ -123,10 +123,10 @@ namespace BToolbox.GUI.Tables
         public CustomDataGridViewDragHandlerCollection<T> DragHandlers { get; } = new();
 
         private void itemsAddedHandler(IEnumerable<IObservableCollection<T>.ItemWithPosition> affectedItemsWithPositions)
-            => affectedItemsWithPositions.Foreach(aiwp => Rows.Insert(aiwp.Position, new CustomDataGridViewRow<T>(this, aiwp.Item)));
+            => InvokeIfRequired(() => affectedItemsWithPositions.Foreach(aiwp => Rows.Insert(aiwp.Position, new CustomDataGridViewRow<T>(this, aiwp.Item))));
 
         private void itemsRemovedHandler(IEnumerable<IObservableCollection<T>.ItemWithPosition> affectedItemsWithPositions)
-            => affectedItemsWithPositions.Foreach(aiwp => Rows.RemoveAt(aiwp.Position));
+            => InvokeIfRequired(() => affectedItemsWithPositions.OrderByDescending(aiwp => aiwp.Position).Foreach(aiwp => Rows.RemoveAt(aiwp.Position)));
 
         private void loadItems()
         {
