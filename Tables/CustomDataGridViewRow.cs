@@ -10,11 +10,11 @@ namespace BToolbox.GUI.Tables
     public class CustomDataGridViewRow<T>: DataGridViewRow
     {
 
-        private CustomDataGridView<T> table;
+        private readonly CustomDataGridView<T> table;
 
-        private List<DataGridViewCell> cells = new List<DataGridViewCell>();
+        private readonly List<DataGridViewCell> cells = new();
 
-        private T item;
+        private readonly T item;
 
         public T Item => item;
 
@@ -70,7 +70,9 @@ namespace BToolbox.GUI.Tables
             {
                 DataGridViewCell cell = cells[i];
                 CustomDataGridViewColumnDescriptor<T> columnDescriptor = table.ColumnDescriptors[i];
-                columnDescriptor.ExternalUpdateEventSubscriberMethod?.Invoke(item, () => columnDescriptor.UpdaterMethod?.Invoke(item, cell));
+                CustomDataGridViewColumnDescriptor<T>.CellUpdaterMethodInvokerDelegate subscribingDelegate =
+                    () => table.InvokeIfRequired(() => columnDescriptor.UpdaterMethod?.Invoke(item, cell));
+                columnDescriptor.ExternalUpdateEventSubscriberMethod?.Invoke(item, subscribingDelegate);
             }
         }
 
@@ -94,7 +96,7 @@ namespace BToolbox.GUI.Tables
             CustomDataGridViewColumnDescriptor<T> columnDescriptor = tagData[1] as CustomDataGridViewColumnDescriptor<T>;
             if (cell == null)
                 return;
-            columnDescriptor.UpdaterMethod?.Invoke(item, cell);
+            table.InvokeIfRequired(() => columnDescriptor.UpdaterMethod?.Invoke(item, cell));
         }
 
         private DataGridViewCell createAndInitCell(CustomDataGridViewColumnDescriptor<T> columnDescriptor)
@@ -186,9 +188,7 @@ namespace BToolbox.GUI.Tables
         }
 
         private void updateCell(int columnIndex)
-        {
-            getColumnDescriptor(columnIndex).UpdaterMethod?.Invoke(item, Cells[columnIndex]);
-        }
+            => getColumnDescriptor(columnIndex).UpdaterMethod?.Invoke(item, Cells[columnIndex]);
 
         private static DataGridViewCell getCellByType(DataGridViewColumnType type, CustomDataGridViewCustomColumnTypeDescriptor customTypeDescriptor)
         {
@@ -243,9 +243,7 @@ namespace BToolbox.GUI.Tables
         }
 
         private CustomDataGridViewColumnDescriptor<T> getColumnDescriptor(int columnIndex)
-        {
-            return table.ColumnDescriptors[columnIndex];
-        }
+            => table.ColumnDescriptors[columnIndex];
 
     }
 }

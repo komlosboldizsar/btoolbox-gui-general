@@ -22,7 +22,7 @@ namespace BToolbox.GUI.Tables
                     boundCollection.ItemsRemoved -= itemsRemovedHandler;
                 }
                 boundCollection = value;
-                loadItems();
+                InvokeIfRequired(loadItems);
                 if (boundCollection != null)
                 {
                     boundCollection.ItemsAdded += itemsAddedHandler;
@@ -31,7 +31,7 @@ namespace BToolbox.GUI.Tables
             }
         }
 
-        private List<CustomDataGridViewColumnDescriptor<T>> columnDescriptors = new List<CustomDataGridViewColumnDescriptor<T>>();
+        private List<CustomDataGridViewColumnDescriptor<T>> columnDescriptors = new();
         public IReadOnlyList<CustomDataGridViewColumnDescriptor<T>> ColumnDescriptors => columnDescriptors;
 
         public CustomDataGridView() => init();
@@ -251,6 +251,18 @@ namespace BToolbox.GUI.Tables
                 e.Handled = true;
             }
         }
+
+        public void InvokeIfRequired(Action action)
+        {
+            if (InvokeSafe && InvokeRequired)
+            {
+                Invoke(action);
+                return;
+            }
+            action();
+        }
+
+        public bool InvokeSafe { get; set; } = false;
 
     }
 }
