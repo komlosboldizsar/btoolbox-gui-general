@@ -9,24 +9,24 @@ namespace BToolbox.GUI.Tables
     public class CustomDataGridView<T> : DataGridView
     {
 
-        private IObservableEnumerable<T> boundCollection;
+        private IEnumerable<T> boundCollection;
 
-        public IObservableEnumerable<T> BoundCollection
+        public IEnumerable<T> BoundCollection
         {
             get => boundCollection;
             set
             {
-                if (boundCollection != null)
+                if (boundCollection is IObservableEnumerable<T> oldBoundCollection)
                 {
-                    boundCollection.ItemsAdded -= itemsAddedHandler;
-                    boundCollection.ItemsRemoved -= itemsRemovedHandler;
+                    oldBoundCollection.ItemsAdded -= itemsAddedHandler;
+                    oldBoundCollection.ItemsRemoved -= itemsRemovedHandler;
                 }
                 boundCollection = value;
                 InvokeIfRequired(loadItems);
-                if (boundCollection != null)
+                if (boundCollection is IObservableEnumerable<T> newBoundCollection)
                 {
-                    boundCollection.ItemsAdded += itemsAddedHandler;
-                    boundCollection.ItemsRemoved += itemsRemovedHandler;
+                    newBoundCollection.ItemsAdded += itemsAddedHandler;
+                    newBoundCollection.ItemsRemoved += itemsRemovedHandler;
                 }
             }
         }
