@@ -28,6 +28,7 @@ namespace BToolbox.GUI.Tables
             subscribeToItemEvents();
             subscribeToMultilevelItemEvents();
             subscribeToExternalUpdateEvents();
+            updateCells();
         }
 
         private void createCells()
@@ -189,6 +190,13 @@ namespace BToolbox.GUI.Tables
 
         private void updateCell(int columnIndex)
             => getColumnDescriptor(columnIndex).UpdaterMethod?.Invoke(item, Cells[columnIndex]);
+
+        private void updateCells()
+        {
+            int i = 0;
+            foreach (CustomDataGridViewColumnDescriptor<T> columnDescriptor in table.ColumnDescriptors)
+                columnDescriptor.UpdaterMethod?.Invoke(item, Cells[i++]);
+        }
 
         private static DataGridViewCell getCellByType(DataGridViewColumnType type, CustomDataGridViewCustomColumnTypeDescriptor customTypeDescriptor)
         {
