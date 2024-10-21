@@ -12,4 +12,10 @@
     <ProjectReference Include="..\btoolbox-model-general\btoolbox-model-general.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Forms\OneInstanceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+
 </Project>
