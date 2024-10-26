@@ -37,6 +37,7 @@ namespace BToolbox.GUI.Forms
 
         protected override void OnLoad(EventArgs e)
         {
+            base.OnLoad(e);
             if (_hideOnStartup)
             {
                 Hide();
@@ -44,7 +45,6 @@ namespace BToolbox.GUI.Forms
                 ShowInTaskbar = true;
                 _hidingOnStartup = false;
             }
-            base.OnLoad(e);
         }
 
         private void OneInstanceShowMessageReceived()
